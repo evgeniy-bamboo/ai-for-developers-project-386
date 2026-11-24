@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/knip/schema-jsonc.json",
+  // Generated code may export more than is used.
+  "ignore": ["**/generated/**"],
+  "workspaces": {
+    ".": {},
+    "backend": { "entry": ["src/**/*.test.ts"], "project": ["src/**/*.ts"] },
+    "frontend": { "entry": ["src/**/*.test.ts"], "project": ["src/**/*.{ts,tsx}"] },
+    // Imported by main.tsp and tspconfig.yaml, which Knip cannot read.
+    "spec": { "ignoreDependencies": ["@typespec/*"] },
+  },
+}

@@ -94,6 +94,11 @@ description = "Check import rules"
 depends = ["install"]
 run = "npm run lint:architecture"
 
+[tasks."lint:unused"]
+description = "Find unused files, exports and dependencies"
+depends = ["install"]
+run = "npm run lint:unused"
+
 [tasks."lint:spelling"]
 description = "Check spelling"
 run = "typos"
@@ -127,6 +132,7 @@ depends = [
   "lint:actions",
   "lint:architecture",
   "lint:spelling",
+  "lint:unused",
   "typecheck",
   "test",
   "build",

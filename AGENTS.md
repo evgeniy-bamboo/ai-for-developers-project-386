@@ -49,6 +49,8 @@ Use `localhost`, not `127.0.0.1`, for the frontend: Vite may listen on IPv6 only
 
 hk (`hk.pkl`) runs `mise run check:commit` on commit, `mise run check:generated` and `mise run check` on push, against the working tree, unstaged changes included. Fix failures; do not bypass hooks with `--no-verify` or `HK=0`.
 
+Do not disable a check to get a change through. An exception covers one path and one rule, states the reason and needs the user's approval.
+
 Hooks, agents and CI must call mise tasks, so that each check is defined once.
 
 The hk version must be the same in `mise.toml` and `hk.pkl`. Commit `mise.lock` with version changes.
