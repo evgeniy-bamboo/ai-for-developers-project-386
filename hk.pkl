@@ -7,6 +7,10 @@ hooks {
     stash = "none"
     steps {
       ["typecheck"] { check = "mise run typecheck" }
+      ["actions"] {
+        glob = ".github/**"
+        check = "mise run lint:actions"
+      }
     }
   }
   ["pre-push"] {
