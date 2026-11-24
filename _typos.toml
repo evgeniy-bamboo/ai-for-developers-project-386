@@ -1,0 +1,13 @@
+[files]
+# Check dotfiles, such as .github/.
+ignore-hidden = false
+extend-exclude = [
+  ".git/",
+  "mise.lock",
+  "package-lock.json",
+  # Generated; fix the source instead.
+  "**/generated/",
+  "spec/openapi.yaml",
+  # Must not be edited.
+  ".github/workflows/hexlet-check.yml",
+]

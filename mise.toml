@@ -11,6 +11,7 @@ hk = "2.13.0"
 jactionlint = "2.6.0"
 node = "24"
 pitchfork = "2.36.0"
+typos = "1.52.2"
 
 # Background dev servers: `mise daemons start|stop|status|logs`.
 
@@ -72,9 +73,13 @@ run = "npm run typecheck"
 description = "Lint GitHub Actions workflows"
 run = "jactionlint --shellcheck= --pyflakes="
 
+[tasks."lint:spelling"]
+description = "Check spelling"
+run = "typos"
+
 [tasks.check]
 description = "Lint, type-check, test and build"
-depends = ["lint:actions", "typecheck", "test", "build"]
+depends = ["lint:actions", "lint:spelling", "typecheck", "test", "build"]
 
 [tasks."check:generated"]
 # Compares with the Git index: stage regenerated files first.

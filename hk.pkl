@@ -11,6 +11,7 @@ hooks {
         glob = ".github/**"
         check = "mise run lint:actions"
       }
+      ["spelling"] { check = "mise run lint:spelling" }
     }
   }
   ["pre-push"] {
