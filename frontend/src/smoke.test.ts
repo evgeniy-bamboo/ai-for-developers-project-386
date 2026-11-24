@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import type { AddressInfo } from "node:net";
 import { join } from "node:path";
 import { after, before, test } from "node:test";
 import { createServer } from "vite";
@@ -16,8 +15,9 @@ before(async () => {
     server: { host: "127.0.0.1", port: 0 },
   });
   await server.listen();
-  const { port } = server.httpServer!.address() as AddressInfo;
-  baseUrl = `http://127.0.0.1:${port}`;
+  const address = server.httpServer?.address();
+  assert.ok(typeof address === "object" && address !== null);
+  baseUrl = `http://127.0.0.1:${address.port}`;
 });
 
 after(() => server.close());

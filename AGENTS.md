@@ -17,8 +17,9 @@ mise run hooks   # Git hooks
 | Command | Does |
 | --- | --- |
 | `mise run install` | Install npm dependencies. Not the same as `mise install`. |
-| `mise run check` | Lint, scan for secrets, type-check, test and build. Run before finishing a change. |
+| `mise run check` | Scan for secrets, check formatting, lint, type-check, test and build. Run before finishing a change. |
 | `mise run typecheck` / `test` / `build` | Single checks |
+| `mise run format` | Format code. Fixes `check:format` failures. |
 | `mise run generate` | Regenerate `openapi.yaml` and code after changing `spec/` |
 | `mise run check:generated` | Fail if generated code does not match `spec/`. Stage regenerated files first. |
 
@@ -42,7 +43,7 @@ Use `localhost`, not `127.0.0.1`, for the frontend: Vite may listen on IPv6 only
 
 ### Git hooks
 
-hk (`hk.pkl`) runs `mise run typecheck` on commit, `mise run check:generated` and `mise run check` on push, against the working tree, unstaged changes included. Fix failures; do not bypass hooks with `--no-verify` or `HK=0`.
+hk (`hk.pkl`) runs `mise run check:commit` on commit, `mise run check:generated` and `mise run check` on push, against the working tree, unstaged changes included. Fix failures; do not bypass hooks with `--no-verify` or `HK=0`.
 
 Hooks, agents and CI must call mise tasks, so that each check is defined once.
 

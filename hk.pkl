@@ -5,14 +5,9 @@ hooks {
   ["pre-commit"] {
     // Checks only, nothing is rewritten, so leave unstaged changes in place.
     stash = "none"
+    // One task, so that dependencies are installed once, not by parallel steps.
     steps {
-      ["secrets"] { check = "mise run check:secrets:staged" }
-      ["typecheck"] { check = "mise run typecheck" }
-      ["actions"] {
-        glob = ".github/**"
-        check = "mise run lint:actions"
-      }
-      ["spelling"] { check = "mise run lint:spelling" }
+      ["check"] { check = "mise run check:commit" }
     }
   }
   ["pre-push"] {

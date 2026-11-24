@@ -1,0 +1,79 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "react", "jsx-a11y", "node", "promise"],
+  "options": { "typeAware": true, "denyWarnings": true },
+  "categories": { "correctness": "error", "suspicious": "error" },
+  "ignorePatterns": ["**/generated/**", "**/dist/**"],
+  "rules": {
+    "react/react-in-jsx-scope": "off", // the automatic JSX runtime needs no import
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-misused-promises": "error",
+    // node:test tracks these promises itself.
+    "typescript/no-floating-promises": [
+      "error",
+      {
+        "allowForKnownSafeCalls": [
+          {
+            "from": "package",
+            "name": ["test", "it", "describe", "suite"],
+            "package": "node:test",
+          },
+        ],
+      },
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": [
+              "vitest",
+              "vitest/*",
+              "jest",
+              "@jest/*",
+              "mocha",
+              "ava",
+              "tape",
+              "chai",
+              "sinon",
+              "@testing-library/*",
+            ],
+            "message": "Tests use Node.js built-ins only: node:test and node:assert/strict.",
+          },
+          {
+            "group": ["assert", "node:assert", "assert/strict"],
+            "message": "Use node:assert/strict.",
+          },
+        ],
+      },
+    ],
+  },
+  "overrides": [
+    {
+      "files": ["frontend/src/**"],
+      "excludeFiles": ["**/*.test.ts"],
+      "rules": {
+        "no-restricted-globals": [
+          "error",
+          { "name": "fetch", "message": "Call the API through the generated SDK." },
+          { "name": "XMLHttpRequest", "message": "Call the API through the generated SDK." },
+        ],
+        "no-restricted-properties": [
+          "error",
+          {
+            "object": "globalThis",
+            "property": "fetch",
+            "message": "Call the API through the generated SDK.",
+          },
+          {
+            "object": "window",
+            "property": "fetch",
+            "message": "Call the API through the generated SDK.",
+          },
+        ],
+      },
+    },
+  ],
+}

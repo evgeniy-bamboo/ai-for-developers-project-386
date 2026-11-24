@@ -68,6 +68,21 @@ description = "Type-check all workspaces"
 depends = ["install"]
 run = "npm run typecheck"
 
+[tasks.lint]
+description = "Lint code"
+depends = ["install"]
+run = "npm run lint"
+
+[tasks.format]
+description = "Format code"
+depends = ["install"]
+run = "npm run format"
+
+[tasks."check:format"]
+description = "Check formatting"
+depends = ["install"]
+run = "npm run format:check"
+
 [tasks."lint:actions"]
 # shellcheck and pyflakes are off: they are not pinned, so results would differ
 # between machines that have them and machines that do not.
@@ -86,9 +101,29 @@ run = "betterleaks git --no-banner --verbose"
 description = "Scan staged changes for secrets"
 run = "betterleaks git --no-banner --verbose --staged"
 
+[tasks."check:commit"]
+description = "Fast checks, run by the commit hook"
+depends = [
+  "check:secrets:staged",
+  "check:format",
+  "lint",
+  "lint:actions",
+  "lint:spelling",
+  "typecheck",
+]
+
 [tasks.check]
-description = "Lint, scan for secrets, type-check, test and build"
-depends = ["check:secrets", "lint:actions", "lint:spelling", "typecheck", "test", "build"]
+description = "Scan for secrets, check formatting, lint, type-check, test and build"
+depends = [
+  "check:secrets",
+  "check:format",
+  "lint",
+  "lint:actions",
+  "lint:spelling",
+  "typecheck",
+  "test",
+  "build",
+]
 
 [tasks."check:generated"]
 # Compares with the Git index: stage regenerated files first.
