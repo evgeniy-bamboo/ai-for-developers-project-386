@@ -57,12 +57,12 @@ Outside these checks: unknown route → 404 `not_found`; unexpected failure → 
 
 ## Technical requirements
 
-Node.js 24+, npm workspaces, TypeScript 5.x (5.8+; `openapi-typescript` does not support later majors), ESM.
+Node.js 24+, npm workspaces, TypeScript 6.x (stable `@hey-api/openapi-ts` fails on 7), ESM.
 
 ```
 spec/      TypeSpec → openapi.yaml
 backend/   Fastify API
-frontend/  Vanilla TypeScript UI
+frontend/  React + shadcn/ui SPA
 ```
 
 ### API contract
@@ -70,22 +70,30 @@ frontend/  Vanilla TypeScript UI
 - TypeSpec in `spec/` is the only source of truth. Change it first.
 - `openapi.yaml` is generated and committed; never edit it by hand.
 - `fastify-openapi-glue` registers routes and validation from `openapi.yaml`; `operationId` = controller method. No hand-written routes.
-- `openapi-typescript` generates API types from `openapi.yaml`; they are committed, never edited by hand. The frontend client is `openapi-fetch` with these types. No other API calls.
+- Every operation sets an explicit camelCase `@operationId`, e.g. `bookingsCreate`. The default `Bookings_create` does not match the generated handler names.
+- `@hey-api/openapi-ts` generates code from `openapi.yaml`; it is committed, never edited by hand:
+  - frontend: client SDK (fetch client, types) and TanStack Query options;
+  - backend: API types and `RouteHandlers` (`fastify` plugin). No other code.
+- The frontend calls the API only through the generated SDK. No hand-written `fetch` or API types.
 
 ### TypeScript
 
-- No transpile/bundle step; codegen only. Node.js runs `.ts` directly.
-- Erasable syntax only (`erasableSyntaxOnly`): no enums, runtime namespaces, parameter properties, decorators or JSX.
-- Use `import type` and `.ts` import extensions. `tsc --noEmit` is for type checking only.
+- `tsc --noEmit` is for type checking only.
+- Use `import type`.
+- Erasable syntax only (`erasableSyntaxOnly`): no enums, runtime namespaces, parameter properties or decorators. JSX is allowed in `frontend/` only.
+- Backend: no transpile/bundle step; Node.js runs `.ts` directly. Use `.ts` import extensions.
+- Frontend: Vite bundles. Modules tested with `node:test` contain no JSX and use relative imports with `.ts` extensions, not the `@/` alias.
 
 ### Testing
 
 - Node.js built-ins only: `node --test`, `node:test` (including `mock`), `node:assert/strict`. No third-party test runners, assertion or mocking libraries.
+- Frontend: unit tests cover pure logic (e.g. grouping slots by local date). No component tests.
 
 ### Backend
 
 - Controller → use case → repository interface.
 - Controllers only map HTTP to use cases. No business logic.
+- Controllers are typed as the generated `RouteHandlers` and reply with `reply.code(status).send(body)`; returning the body directly fails type checking.
 - One use case per file. No Fastify imports; repositories and clock are injected.
 - Storage is in-memory behind repository interfaces; data is lost on restart.
 - Custom Fastify error and not-found handlers produce every error body. Fastify's own 4xx errors (schema validation, broken JSON, etc.) → 400 `invalid_input`.
@@ -95,8 +103,12 @@ frontend/  Vanilla TypeScript UI
 ### Frontend
 
 - Separate process; talks to the backend only through the HTTP API.
-- No framework or bundler. A small Node.js server serves static files, strips types on the fly (`stripTypeScriptTypes` from `node:module`) and proxies `/api/*` to the backend, stripping `/api`. Spec paths and backend routes have no `/api` prefix.
-- `openapi-fetch` is loaded via import map, with `baseUrl: "/api"`.
+- React, Vite, Tailwind CSS, shadcn/ui. Client-rendered SPA: no server rendering.
+- Build UI from shadcn/ui components. They live in `frontend/src/components/ui/`, are added with the shadcn CLI and may be edited.
+- Server state: TanStack Query with the generated options. No other state library.
+- Generated SDK uses `baseUrl: "/api"`. Spec paths and backend routes have no `/api` prefix.
+- Development: Vite dev server proxies `/api/*` to the backend, stripping `/api`.
+- Production: `vite build`, then a small Node.js server serves `dist/` (unknown non-API paths → `index.html`) and proxies `/api/*` the same way.
 
 ## Constraints
 
