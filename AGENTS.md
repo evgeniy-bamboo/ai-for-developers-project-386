@@ -27,6 +27,10 @@ Tasks install npm dependencies themselves when needed. `mise tasks` lists all ta
 
 Run other tools as `mise x -- <command>`, e.g. `mise x -- npm install <package> -w frontend`.
 
+### Backend folders
+
+`.dependency-cruiser.cjs` enforces the architecture by folder in `backend/src/`: `controllers/`, `use-cases/`, `repositories/`, `domain/` (shared types, errors and pure logic), `generated/`. Other folders fail the check.
+
 ### Dev servers
 
 Use daemons: they run in the background and `start` returns once the servers are ready. `mise run dev` blocks the terminal and uses the same ports; do not use it.
