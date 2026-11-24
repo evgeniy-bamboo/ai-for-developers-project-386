@@ -17,7 +17,7 @@ mise run hooks   # Git hooks
 | Command | Does |
 | --- | --- |
 | `mise run install` | Install npm dependencies. Not the same as `mise install`. |
-| `mise run check` | Lint, type-check, test and build. Run before finishing a change. |
+| `mise run check` | Lint, scan for secrets, type-check, test and build. Run before finishing a change. |
 | `mise run typecheck` / `test` / `build` | Single checks |
 | `mise run generate` | Regenerate `openapi.yaml` and code after changing `spec/` |
 | `mise run check:generated` | Fail if generated code does not match `spec/`. Stage regenerated files first. |

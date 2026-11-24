@@ -6,6 +6,7 @@ hooks {
     // Checks only, nothing is rewritten, so leave unstaged changes in place.
     stash = "none"
     steps {
+      ["secrets"] { check = "mise run check:secrets:staged" }
       ["typecheck"] { check = "mise run typecheck" }
       ["actions"] {
         glob = ".github/**"

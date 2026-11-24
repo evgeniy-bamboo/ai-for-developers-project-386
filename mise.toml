@@ -7,6 +7,7 @@ lockfile = true
 experimental = true
 
 [tools]
+betterleaks = "1.10.1"
 hk = "2.13.0"
 jactionlint = "2.6.0"
 node = "24"
@@ -77,9 +78,17 @@ run = "jactionlint --shellcheck= --pyflakes="
 description = "Check spelling"
 run = "typos"
 
+[tasks."check:secrets"]
+description = "Scan Git history for secrets"
+run = "betterleaks git --no-banner --verbose"
+
+[tasks."check:secrets:staged"]
+description = "Scan staged changes for secrets"
+run = "betterleaks git --no-banner --verbose --staged"
+
 [tasks.check]
-description = "Lint, type-check, test and build"
-depends = ["lint:actions", "lint:spelling", "typecheck", "test", "build"]
+description = "Lint, scan for secrets, type-check, test and build"
+depends = ["check:secrets", "lint:actions", "lint:spelling", "typecheck", "test", "build"]
 
 [tasks."check:generated"]
 # Compares with the Git index: stage regenerated files first.
