@@ -1,0 +1,22 @@
+{
+  "name": "call-calendar",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": [
+    "spec",
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "generate": "npm run generate -w spec && npm run generate -w backend",
+    "test": "npm test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "~6.0.3"
+  }
+}

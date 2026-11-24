@@ -1,0 +1,83 @@
+min_version = "2026.11.0"
+
+[settings]
+# Pin exact versions and checksums in mise.lock (commit it).
+lockfile = true
+# Required by [daemons].
+experimental = true
+
+[tools]
+hk = "2.13.0"
+node = "24"
+pitchfork = "2.36.0"
+
+# Background dev servers: `mise daemons start|stop|status|logs`.
+
+[daemons.backend]
+task = "dev:backend"
+ready_port = 3000
+
+[daemons.frontend]
+task = "dev:frontend"
+# Vite may listen on IPv6 only, which ready_port does not detect.
+ready_http = "http://localhost:5173/"
+depends = ["backend"]
+
+# Tasks delegate to npm scripts, so the project also works without mise.
+
+[tasks.install]
+description = "Install npm dependencies (skipped when up to date)"
+run = "npm install"
+sources = ["package.json", "*/package.json", "package-lock.json"]
+outputs = ["node_modules/.package-lock.json"]
+
+[tasks.generate]
+description = "Regenerate openapi.yaml and code from TypeSpec"
+depends = ["install"]
+run = "npm run generate"
+
+[tasks.dev]
+description = "Run backend and frontend dev servers"
+depends = ["dev:backend", "dev:frontend"]
+
+[tasks."dev:backend"]
+description = "Run the backend (port 3000)"
+depends = ["install"]
+run = "npm run dev -w backend"
+
+[tasks."dev:frontend"]
+description = "Run the Vite dev server (port 5173)"
+depends = ["install"]
+run = "npm run dev -w frontend"
+
+[tasks.build]
+description = "Build the frontend"
+depends = ["install"]
+run = "npm run build -w frontend"
+
+[tasks.test]
+description = "Run all unit tests"
+depends = ["install"]
+run = "npm test"
+
+[tasks.typecheck]
+description = "Type-check all workspaces"
+depends = ["install"]
+run = "npm run typecheck"
+
+[tasks.check]
+description = "Type-check, test and build"
+depends = ["typecheck", "test", "build"]
+
+[tasks."check:generated"]
+# Compares with the Git index: stage regenerated files first.
+description = "Check that generated code matches the spec"
+depends = ["generate"]
+run = [
+  "git add --intent-to-add -- spec/openapi.yaml backend/src/generated",
+  "git diff --exit-code -- spec/openapi.yaml backend/src/generated",
+]
+
+[tasks.hooks]
+description = "Install Git hooks (once per clone)"
+run = "hk install --mise"
