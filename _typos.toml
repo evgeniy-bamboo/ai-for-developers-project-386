@@ -8,6 +8,8 @@ extend-exclude = [
   # Generated; fix the source instead.
   "**/generated/",
   "spec/openapi.yaml",
+  # Third-party; hashes are recorded in skills-lock.json.
+  ".claude/skills/",
   # Must not be edited.
   ".github/workflows/hexlet-check.yml",
 ]

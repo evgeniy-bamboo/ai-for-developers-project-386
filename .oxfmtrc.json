@@ -4,6 +4,7 @@
     "**/generated/**",
     "spec/openapi.yaml",
     ".github/workflows/hexlet-check.yml",
+    ".claude/skills/**",
     "**/*.md"
   ]
 }
