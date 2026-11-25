@@ -143,8 +143,8 @@ depends = [
 description = "Check that generated code matches the spec"
 depends = ["generate"]
 run = [
-  "git add --intent-to-add -- spec/openapi.yaml backend/src/generated",
-  "git diff --exit-code -- spec/openapi.yaml backend/src/generated",
+  "git add --intent-to-add -- spec/openapi.yaml backend/src/generated frontend/src/generated",
+  "git diff --exit-code -- spec/openapi.yaml backend/src/generated frontend/src/generated",
 ]
 
 [tasks.hooks]

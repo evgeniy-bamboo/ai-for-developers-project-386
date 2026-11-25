@@ -8,7 +8,7 @@
   ],
   "type": "module",
   "scripts": {
-    "generate": "npm run generate -w spec && npm run generate -w backend",
+    "generate": "npm run generate -w spec && npm run generate -w backend && npm run generate -w frontend",
     "lint": "oxlint",
     "lint:unused": "knip --treat-config-hints-as-errors",
     "lint:architecture": "depcruise backend frontend --config .dependency-cruiser.cjs",
