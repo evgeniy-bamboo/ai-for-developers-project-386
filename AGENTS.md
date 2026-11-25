@@ -54,3 +54,13 @@ Do not disable a check to get a change through. An exception covers one path and
 Hooks, agents and CI must call mise tasks, so that each check is defined once.
 
 The hk version must be the same in `mise.toml` and `hk.pkl`. Commit `mise.lock` with version changes.
+
+## Commits
+
+Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/): `type(scope): subject`. Older history does not follow this; do not copy its style.
+
+- Types: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build` (dependencies, mise, bundling), `ci` (GitHub Actions), `chore` (linters, hooks, other config).
+- Scopes: `spec`, `backend`, `frontend`. Omit if none or several apply.
+- A `spec/` change and the code regenerated from it go in one commit, with scope `spec`.
+- Subject: imperative, lowercase first word, no period. Header at most 72 characters.
+- Body: optional. Say why, not what.
