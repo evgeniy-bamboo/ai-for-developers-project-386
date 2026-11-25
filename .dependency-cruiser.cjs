@@ -98,6 +98,8 @@ module.exports = {
   options: {
     doNotFollow: { path: "node_modules" },
     tsPreCompilationDeps: true,
+    // Resolves the "@/" alias.
+    tsConfig: { fileName: "frontend/tsconfig.json" },
     enhancedResolveOptions: {
       exportsFields: ["exports"],
       conditionNames: ["import", "node", "default", "types"],

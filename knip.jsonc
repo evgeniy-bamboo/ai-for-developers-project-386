@@ -5,7 +5,11 @@
   "workspaces": {
     ".": {},
     "backend": { "entry": ["src/**/*.test.ts"], "project": ["src/**/*.ts"] },
-    "frontend": { "entry": ["src/**/*.test.ts"], "project": ["src/**/*.{ts,tsx}"] },
+    // index.css is linked from index.html.
+    "frontend": {
+      "entry": ["src/index.css", "src/**/*.test.ts"],
+      "project": ["src/**/*.{ts,tsx,css}"],
+    },
     // Imported by main.tsp and tspconfig.yaml, which Knip cannot read.
     "spec": { "ignoreDependencies": ["@typespec/*"] },
   },
