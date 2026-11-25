@@ -8,19 +8,29 @@ Simplified cal.com: guests book calls with a single admin. No registration or au
 
 ## User flows
 
+| Path | Page |
+| --- | --- |
+| `/` | Home page: tells about the service. Static, no API calls. |
+| `/book` | Booking page: all steps of booking a call |
+| `/admin` | Admin page |
+| other | "Page not found" |
+
+Every page has a header (logo → home page, "Book a call" → booking page) and a footer ("Admin" → admin page).
+
 ### Guest: book a call
 
-1. First page lists the enabled slot durations. Guest picks one.
-2. Calendar opens. Only dates with available slots are selectable; all others are disabled. Guest picks a date.
-3. Available slots for that date are shown. Guest clicks one.
-4. Form: email (required), name (required), notes (optional). Guest confirms.
-5. Confirmation screen. On error: `slot_taken` or `invalid_slot` → show it and refresh the slots; `duration_disabled` → show it and return to the first page; `invalid_input` → show it in the form; anything else, including network failure → show a generic error and keep the form.
+1. Home page leads to the booking page.
+2. Booking page lists the enabled slot durations. Guest picks one.
+3. Calendar opens. Only dates with available slots are selectable; all others are disabled. Guest picks a date.
+4. Available slots for that date are shown. Guest clicks one.
+5. Form: email (required), name (required), notes (optional). Guest confirms.
+6. Confirmation screen. On error: `slot_taken` or `invalid_slot` → show it and refresh the slots; `duration_disabled` → show it and return to the durations; `invalid_input` → show it in the form; anything else, including network failure → show a generic error and keep the form.
 
 ### Admin
 
-"Admin" link in the footer → single page with both sections below.
+Single page with both sections below.
 
-- **Upcoming events**: events that have not ended, earliest first: guest email, name, notes, booked slot (start and duration), created date and time.
+- **Upcoming bookings**: bookings that have not ended, earliest first: guest email, name, notes, booked slot (start and duration), created date and time.
 - **Durations**: toggle the durations offered to guests: 15m, 30m, 45m, 1h.
 
 ## Business rules
@@ -31,7 +41,7 @@ Simplified cal.com: guests book calls with a single admin. No registration or au
 - Booking window: tomorrow through +14 days, by calendar date in `ADMIN_TZ`. Only the backend computes it, so guests in other time zones may be offered slots on their local today.
 - Slots are requested by duration and a UTC range `[from, to)`, matched on slot start. The backend returns only bookable slots.
 - The calendar requests `[now, now + 16 days)` and groups slots by the guest's local date. It has no window or working-hours logic of its own.
-- All durations are enabled by default. Disabling one blocks new bookings only; existing ones stay. If none is enabled, the first page says so.
+- All durations are enabled by default. Disabling one blocks new bookings only; existing ones stay. If none is enabled, the booking page says so.
 - The backend re-validates every booking: input, duration, window, working hours, slot grid, overlap.
 - API dates are ISO 8601 UTC. UI shows the browser's local time.
 
@@ -103,7 +113,7 @@ frontend/  React + shadcn/ui SPA
 ### Frontend
 
 - Separate process; talks to the backend only through the HTTP API.
-- React, Vite, Tailwind CSS, shadcn/ui. Client-rendered SPA: no server rendering.
+- React, React Router (declarative mode), Vite, Tailwind CSS, shadcn/ui. Client-rendered SPA: no server rendering.
 - Build UI from shadcn/ui components. They live in `frontend/src/components/ui/`, are added with the shadcn CLI and may be edited.
 - Server state: TanStack Query with the generated options. No other state library.
 - Generated SDK uses `baseUrl: "/api"`. Spec paths and backend routes have no `/api` prefix.
