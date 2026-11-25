@@ -1,6 +1,6 @@
 # AGENTS.md
 
-`README.md` is the project specification.
+`README.md` is the project specification: business rules, API contract, code and testing rules. Read it before changing code; it is not loaded automatically.
 
 ## Tooling (mise)
 
@@ -27,6 +27,20 @@ Tasks install npm dependencies themselves when needed. `mise tasks` lists all ta
 
 Run other tools as `mise x -- <command>`, e.g. `mise x -- npm install <package> -w frontend`.
 
+Run one test file, or one test by name:
+
+```sh
+mise x -- node --test backend/src/app.test.ts
+mise x -- node --test --test-name-pattern="reports ok" backend/src/app.test.ts
+```
+
+### Adding an API operation
+
+1. Define it in `spec/main.tsp` with an explicit `@operationId`.
+2. `mise run generate`. Type checking now fails until a handler exists.
+3. Add the controller and register it in `serviceHandlers` in `backend/src/app.ts`. Routes and validation come from `openapi.yaml`.
+4. Frontend: use the regenerated options from `frontend/src/generated/@tanstack/react-query.gen.ts`.
+
 ### Backend folders
 
 `.dependency-cruiser.cjs` enforces the architecture by folder in `backend/src/`: `controllers/`, `use-cases/`, `repositories/`, `domain/` (shared types, errors and pure logic), `generated/`. Other folders fail the check.
@@ -47,7 +61,7 @@ Use `localhost`, not `127.0.0.1`, for the frontend: Vite may listen on IPv6 only
 
 ### Git hooks
 
-hk (`hk.pkl`) runs `mise run check:commit` on commit, `mise run check:generated` and `mise run check` on push, against the working tree, unstaged changes included. Fix failures; do not bypass hooks with `--no-verify` or `HK=0`.
+hk (`hk.pkl`) runs `mise run check:commit` on commit, `mise run check:generated` and `mise run check` on push, against the working tree, unstaged changes included. Fix failures; do not bypass hooks with `--no-verify` or `HK=0`. Tests, the build and `lint:unused` run only on push, so a commit can pass and its push fail.
 
 Do not disable a check to get a change through. An exception covers one path and one rule, states the reason and needs the user's approval.
 
@@ -61,6 +75,6 @@ Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/): `typ
 
 - Types: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build` (dependencies, mise, bundling), `ci` (GitHub Actions), `chore` (linters, hooks, other config).
 - Scopes: `spec`, `backend`, `frontend`. Omit if none or several apply.
-- A `spec/` change and the code regenerated from it go in one commit, with scope `spec`.
+- A `spec/` change and the code regenerated from it go in one commit, with scope `spec`. Include any backend change needed to type-check, e.g. the handler for a new operation.
 - Subject: imperative, lowercase first word, no period. Header at most 72 characters.
 - Body: optional. Say why, not what.
