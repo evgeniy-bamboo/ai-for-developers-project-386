@@ -22,12 +22,14 @@ before(async () => {
 
 after(() => server.close());
 
-test("serves the page", async () => {
-  const response = await fetch(`${baseUrl}/`);
+for (const path of ["/", "/book", "/admin"]) {
+  test(`serves the app at ${path}`, async () => {
+    const response = await fetch(`${baseUrl}${path}`);
 
-  assert.equal(response.status, 200);
-  assert.match(await response.text(), /id="root"/);
-});
+    assert.equal(response.status, 200);
+    assert.match(await response.text(), /id="root"/);
+  });
+}
 
 test("serves the entry module", async () => {
   const response = await fetch(`${baseUrl}/src/main.tsx`);
