@@ -31,7 +31,7 @@ export function HomePage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4 text-base">
             <ol className="flex list-decimal flex-col gap-2 pl-5 marker:text-muted-foreground">
-              <li>Choose how long the call should be.</li>
+              <li>Choose the kind of call you need.</li>
               <li>Pick a free slot, shown in your local time.</li>
               <li>Enter your name and email to confirm.</li>
             </ol>
