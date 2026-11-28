@@ -67,7 +67,7 @@ Outside these checks: unknown route → 404 `not_found`; unexpected failure → 
 
 ## Technical requirements
 
-Node.js 24+, npm workspaces, TypeScript 6.x (stable `@hey-api/openapi-ts` fails on 7), ESM.
+Node.js 26+, npm workspaces, TypeScript 6.x (stable `@hey-api/openapi-ts` fails on 7), ESM.
 
 ```
 spec/      TypeSpec → openapi.yaml
