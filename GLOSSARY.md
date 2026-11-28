@@ -12,12 +12,12 @@ _Avoid_: User, visitor, client
 The one person **Guests** book calls with.
 _Avoid_: Host, owner
 
-**Duration**:
-A length of call that the **Admin** can offer to **Guests**.
-_Avoid_: Event type, slot type
+**Event type**:
+A kind of call the **Admin** creates and offers to **Guests**, with a title, an optional description and a duration.
+_Avoid_: Call type, meeting type, service, slot type
 
 **Slot**:
-A stretch of time with a fixed start and **Duration** that a **Guest** can book.
+A stretch of time with a fixed start and the duration of an **Event type** that a **Guest** can book.
 _Avoid_: Opening
 
 **Booking**:

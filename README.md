@@ -20,18 +20,18 @@ Every page has a header (logo → home page, "Book a call" → booking page) and
 ### Guest: book a call
 
 1. Home page leads to the booking page.
-2. Booking page lists the enabled slot durations. Guest picks one.
+2. Booking page lists the event types (title, description, duration), by duration then title. Guest picks one.
 3. Calendar opens. Only dates with available slots are selectable; all others are disabled. Guest picks a date.
 4. Available slots for that date are shown. Guest clicks one.
 5. Form: email (required), name (required), notes (optional). Guest confirms.
-6. Confirmation screen. On error: `slot_taken` or `invalid_slot` → show it and refresh the slots; `duration_disabled` → show it and return to the durations; `invalid_input` → show it in the form; anything else, including network failure → show a generic error and keep the form.
+6. Confirmation screen. On error: `slot_taken` or `invalid_slot` → show it and refresh the slots; `event_type_not_found` → show it and return to the event types; `invalid_input` → show it in the form; anything else, including network failure → show a generic error and keep the form.
 
 ### Admin
 
 Single page with both sections below.
 
-- **Upcoming bookings**: bookings that have not ended, earliest first: guest email, name, notes, booked slot (start and duration), created date and time.
-- **Durations**: toggle the durations offered to guests: 15m, 30m, 45m, 1h.
+- **Upcoming bookings**: bookings that have not ended, earliest first: event type title, guest email, name, notes, booked slot (start and duration), created date and time.
+- **Event types**: list, create, edit and delete the event types offered to guests.
 
 ## Business rules
 
@@ -39,10 +39,13 @@ Single page with both sections below.
 - Slots start every 15 minutes and must end within working hours.
 - A slot is available only if it overlaps no booking of any duration. Back-to-back is allowed.
 - Booking window: tomorrow through +14 days, by calendar date in `ADMIN_TZ`. Only the backend computes it, so guests in other time zones may be offered slots on their local today.
-- Slots are requested by duration and a UTC range `[from, to)`, matched on slot start. The backend returns only bookable slots.
+- Slots are requested by event type and a UTC range `[from, to)`, matched on slot start. The backend returns only bookable slots.
 - The calendar requests `[now, now + 16 days)` and groups slots by the guest's local date. It has no window or working-hours logic of its own.
-- All durations are enabled by default. Disabling one blocks new bookings only; existing ones stay. If none is enabled, the booking page says so.
-- The backend re-validates every booking: input, duration, window, working hours, slot grid, overlap.
+- Event type: server-generated id, title, optional description, duration (a multiple of 15 minutes, 15–240). Titles need not be unique.
+- The backend seeds a few event types at startup (e.g. "Intro call" 15m, "Consultation" 30m). The admin may edit or delete them like any other.
+- A booking keeps its event type id and a snapshot of the type's title and duration. Editing or deleting an event type never changes existing bookings; overlap uses each booking's own interval.
+- If there are no event types, the booking page says so.
+- The backend re-validates every booking: input, event type, window, working hours, slot grid, overlap.
 - API dates are ISO 8601 UTC. UI shows the browser's local time.
 
 ### Input limits
@@ -50,6 +53,8 @@ Single page with both sections below.
 - Email: valid format, up to 254 characters.
 - Name: 1–100 characters, not blank.
 - Notes: up to 1000 characters; blank = omitted.
+- Event type title: 1–100 characters, not blank.
+- Event type description: up to 1000 characters; blank = omitted.
 - Limits apply as sent; values are then trimmed before saving.
 
 ### Errors
@@ -58,8 +63,8 @@ Error body: `{ code, message }`. Checks run in table order.
 
 | Status | `code` | When |
 | --- | --- | --- |
-| 400 | `invalid_input` | Malformed request, unknown duration, input limits, `from` not before `to` |
-| 422 | `duration_disabled` | Duration is turned off (booking or listing slots) |
+| 400 | `invalid_input` | Malformed request, input limits, event type duration not allowed, `from` not before `to` |
+| 404 | `event_type_not_found` | Unknown or deleted event type (listing slots, booking, edit, delete) |
 | 422 | `invalid_slot` | Outside the booking window or working hours, or off the slot grid |
 | 409 | `slot_taken` | Overlaps an existing booking |
 
