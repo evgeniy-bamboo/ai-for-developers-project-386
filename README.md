@@ -19,12 +19,17 @@ Every page has a header (logo → home page, "Book a call" → booking page) and
 
 ### Guest: book a call
 
+The booking page is one page with three numbered sections: **Event type**, **Date and time**, **Your details**. A completed section collapses to a one-line summary with a "Change" button; a section not yet reachable shows only its title, dimmed.
+
 1. Home page leads to the booking page.
-2. Booking page lists the event types (title, description, duration), by duration then title. Guest picks one.
-3. Calendar opens. Only dates with available slots are selectable; all others are disabled. Guest picks a date.
-4. Available slots for that date are shown. Guest clicks one.
-5. Form: email (required), name (required), notes (optional). Guest confirms.
-6. Confirmation screen. On error: `slot_taken` or `invalid_slot` → show it and refresh the slots; `event_type_not_found` → show it and return to the event types; `invalid_input` → show it in the form; anything else, including network failure → show a generic error and keep the form.
+2. Event type: the event types (title, description, duration), by duration then title. Guest picks one.
+3. Date and time: a calendar opens on the month of the picked date, else of the first date with slots. Only dates with available slots are selectable; all others are disabled. Guest picks a date; its slots are shown, grouped into morning and afternoon by local time. Guest clicks one.
+4. Your details: email (required), name (required), notes (optional). Guest confirms.
+5. Confirmation replaces the page: event type, local start and end time, name, email, notes, and "Book another call".
+
+On error: `slot_taken` or `invalid_slot` → show it, refresh the slots and reopen **Date and time** on the same date; `event_type_not_found` → show it and return to the event types; `invalid_input` → show it in the form; anything else, including network failure → show a generic error and keep the form. Entered details are kept through every error.
+
+The picks live in the URL (`/book?type=&date=&slot=`), replacing the history entry, so reload and shared links keep them and Back leaves the page. A value that no longer matches (unknown event type, date without slots, slot no longer offered) is dropped once the data loads; an unknown event type also shows the `event_type_not_found` message.
 
 ### Admin
 
