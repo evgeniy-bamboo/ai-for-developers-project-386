@@ -70,6 +70,38 @@ Error body: `{ code, message }`. Checks run in table order.
 
 Outside these checks: unknown route → 404 `not_found`; unexpected failure → 500 `internal_error`.
 
+## API
+
+| Method and path | `operationId` | Success | Errors |
+| --- | --- | --- | --- |
+| `GET /health` | `healthCheck` | 200 `Health` | |
+| `GET /event-types` | `eventTypesList` | 200 `EventType[]`, by duration then title | |
+| `POST /event-types` | `eventTypesCreate` | 201 `EventType` | 400 |
+| `PUT /event-types/{id}` | `eventTypesUpdate` | 200 `EventType` | 400, 404 |
+| `DELETE /event-types/{id}` | `eventTypesDelete` | 204, no body | 404 |
+| `GET /event-types/{id}/slots?from&to` | `slotsList` | 200 `Slot[]`, earliest first | 400, 404 |
+| `POST /bookings` | `bookingsCreate` | 201 `Booking` | 400, 404, 422, 409 |
+| `GET /bookings` | `bookingsList` | 200 `Booking[]`: Upcoming bookings, earliest first | |
+
+```
+EventTypeInput { title, description?, durationMinutes }
+EventType      { id, title, description?, durationMinutes }
+Slot           { startsAt, endsAt }
+BookingInput   { eventTypeId, startsAt, email, name, notes? }
+Booking        { id, eventType: { id, title, durationMinutes }, startsAt, endsAt,
+                 email, name, notes?, createdAt }
+Error          { code, message }
+```
+
+- Ids are server-generated UUID strings. The `{id}` path parameter is a plain string, so any unknown id → 404.
+- `PUT` replaces the whole event type: an omitted `description` is cleared.
+- Durations are integer minutes. Times are `utcDateTime`; the backend computes `endsAt`.
+- `Booking.eventType` is the snapshot taken at booking time.
+- Optional text is absent when blank, never `null`. Email is trimmed only, not lowercased.
+- Lists are bare arrays, sorted by the server, without pagination. `from` and `to` are required; the range has no maximum.
+- Each operation declares only its own error statuses, with `code` narrowed to that status's codes. `not_found` and `internal_error` are not declared.
+- The spec carries every input limit JSON Schema can express. Use cases re-validate all of them, plus the rest: not blank after trimming, duration a multiple of 15, `from` before `to`.
+
 ## Technical requirements
 
 Node.js 26+, npm workspaces, TypeScript 6.x (stable `@hey-api/openapi-ts` fails on 7), ESM.
