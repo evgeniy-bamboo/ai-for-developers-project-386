@@ -11,7 +11,7 @@ betterleaks = "1.10.1"
 gh = "2.105.0"
 hk = "2.13.0"
 jactionlint = "2.6.0"
-node = "24"
+node = "26"
 pitchfork = "2.36.0"
 typos = "1.52.2"
 
