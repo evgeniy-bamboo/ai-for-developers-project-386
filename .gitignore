@@ -1,3 +1,5 @@
 node_modules/
 dist/
 mise.local.toml
+# Agent worktrees, created by Claude Code subagents.
+.claude/worktrees/
